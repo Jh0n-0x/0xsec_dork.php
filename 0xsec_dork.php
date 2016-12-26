@@ -39,38 +39,6 @@
 		$config['dork'] = urlencode($dork);
 		$config['url'] = $config['host'] . $config['dork'];
 
-// 	$a = 5;
-// 	$p = 4;
-// 	if($argv[4] == "-sql" or $argv[4] == "--sql"){
-// 		$p = $p + 1;
-// 		$a = $p + 1;
-// 	}
-
-// function proxy($pack, $config){
-// 	if($argv[$p] == "--proxy" && isset($argv[$a])){
-// 		$proxy 	= explode(":", $argv[$a]);
-// 		$ip 	= $proxy[0];
-// 		$porta 	= $proxy[1];
-
-// 		$sock = fsockopen($ip, $porta);
-// 		if(!$sock){
-// 			echo "Este Proxy nao responde {$ip}:{$porta} tente outro";
-// 		}else{
-// 			$sock = fsockopen(gethostbyname($config['host'], $porta));
-// 			if(!$sock){
-// 				echo "Host nao responde {$config['host']} : {$porta}";
-// 			}
-// 		}
-
-// 		fputs($sock, $pack);
-// 		$buffer = NULL;
-// 		while(!feof($sock)){
-// 			$buffer.=fgets($ock);
-// 		}
-// 		fclose($sock);
-//         return($buffer);
-// 	}
-//  }	
 
 if($argv[1] == "-dork" or $argv[1] == "-d" && isset($argv[2]) ){
  
